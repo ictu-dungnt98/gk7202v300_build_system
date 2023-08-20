@@ -31,6 +31,28 @@ buildroot_dir="buildroot_source"
 buildroot_config_file=""
 
 #pull===================================================================
+pull_toolchain() {
+	# CONFIG:= br-ext-chip-goke/configs/gk7202v300_lite_defconfig
+	# BR2_DEFCONFIG=$(PWD)/$(CONFIG) defconfig
+	# BOARD=gk7202v300_lite
+	# BR_VER = 2023.02.2
+	# BR2_EXTERNAL=$(PWD)/general
+	#BR2_TOOLCHAIN_EXTERNAL_URL="https://github.com/openipc/firmware/releases/download/$(OPENIPC_TOOLCHAIN).tgz"
+	# OPENIPC_TOOLCHAIN := latest/$(shell $(BR2_EXTERNAL)/scripts/show_toolchains.sh $(BR2_DEFCONFIG))
+	rm -rf ${working_dir}/${toolchain_dir}
+	mkdir -p ${working_dir}/${toolchain_dir}
+	cd ${working_dir}/${toolchain_dir}
+	ldconfig
+	wget https://releases.linaro.org/components/toolchain/binaries/latest-7/arm-linux-gnueabihf/gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabihf.tar.xz &&
+		tar xvJf gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabihf.tar.xz
+	if [ ! -d ${working_dir}/${toolchain_dir}/gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabihf ]; then
+		echo "Error:pull toolchain failed"
+		exit 0
+	else
+		echo "pull toolchain ok"
+	fi
+}
+
 pull_uboot() {
 	rm -rf ${working_dir}/${u_boot_dir} &&
 		git clone  https://github.com/OpenIPC/u-boot-gk7205v200.git ${working_dir}/${u_boot_dir}
@@ -54,27 +76,6 @@ pull_linux() {
 	fi
 }
 
-pull_toolchain() {
-	# CONFIG:= br-ext-chip-goke/configs/gk7202v300_lite_defconfig
-	# BR2_DEFCONFIG=$(PWD)/$(CONFIG) defconfig
-	# BOARD=gk7202v300_lite
-	# BR_VER = 2023.02.2
-	# BR2_EXTERNAL=$(PWD)/general
-	#BR2_TOOLCHAIN_EXTERNAL_URL="https://github.com/openipc/firmware/releases/download/$(OPENIPC_TOOLCHAIN).tgz"
-	# OPENIPC_TOOLCHAIN := latest/$(shell $(BR2_EXTERNAL)/scripts/show_toolchains.sh $(BR2_DEFCONFIG))
-	rm -rf ${working_dir}/${toolchain_dir}
-	mkdir -p ${working_dir}/${toolchain_dir}
-	cd ${working_dir}/${toolchain_dir}
-	ldconfig
-	wget https://releases.linaro.org/components/toolchain/binaries/latest-7/arm-linux-gnueabihf/gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabihf.tar.xz &&
-		tar xvJf gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabihf.tar.xz
-	if [ ! -d ${working_dir}/${toolchain_dir}/gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabihf ]; then
-		echo "Error:pull toolchain failed"
-		exit 0
-	else
-		echo "pull toolchain ok"
-	fi
-}
 
 pull_buildroot() {
 	sudo rm -rf ${working_dir}/${buildroot_dir}
@@ -102,7 +103,6 @@ pull_all() {
 	pull_toolchain
 	pull_buildroot
 }
-#pull===================================================================
 
 #clean===================================================================
 clean_log() {
